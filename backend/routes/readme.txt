@@ -1,0 +1,1 @@
+routes contains all the top level routes in index.js and subroutes will be inside respective route ex: user routes in user.routes.js

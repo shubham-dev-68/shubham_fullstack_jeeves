@@ -1,0 +1,1 @@
+Services contains basic reusable CRUD functions for respective models, these will be mostly used in controller API handler functions

@@ -2,3 +2,14 @@
 node_modules/
 uploads/
 .DS_Store
+
+frontend/.env
+frontend/node_modules/
+frontend/uploads/
+frontend/.DS_Store
+
+backend/.env
+backend/node_modules/
+backend/uploads/
+backend/.DS_Store
+backend/property_image
