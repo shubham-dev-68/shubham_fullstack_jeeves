@@ -99,6 +99,7 @@ module.exports.listPropertiesByLocalities = async (req, res)=>{
 			throw({"code":400, message:errorMessages.PAGE_AND_LIMIT_VALUE_ERROR});
 		}
 		const properties = await Property.findAndCountAll({
+			"include":"Images",
 			where : {'locality':locality},
 			"limit" : parseInt(limit),
 			"offset" : (parseInt(page)-1)*parseInt(limit)
@@ -120,6 +121,7 @@ module.exports.listPropertiesByBedroom = async (req, res)=>{
 			throw({"code":400, message:errorMessages.PAGE_AND_LIMIT_VALUE_ERROR});
 		}
 		const properties = await Property.findAndCountAll({
+			"include":"Images",
 			where : {'bedroom':bedroom},
 			"limit" : parseInt(limit),
 			"offset" : (parseInt(page)-1)*parseInt(limit)
@@ -153,16 +155,25 @@ module.exports.getDistinctLocalities = async (req, res)=>{
 
 module.exports.getBySelectedDate = async (req, res)=>{
 	try{
-		let {date} = req.body;
+		let {date, page, limit} = req.body;
+		if(!date){
+			throw({"code":400, message:"Please pass date"});
+		}
+		if (!(page>0 && limit>0)){
+			throw({"code":400, message:errorMessages.PAGE_AND_LIMIT_VALUE_ERROR});
+		}
 		let fromDate = new Date(date);
 		let toDate = new Date(new Date(date).getTime() + 24*60*60*1000);
-		const properties = await Property.findAll({
+		const properties = await Property.findAndCountAll({
+			"include":"Images",
 			where : {
 			    createdAt: {
 			    	[Op.lt]: toDate,
         			[Op.gt]: fromDate
 			    }
-			}
+			},
+			"limit" : parseInt(limit),
+			"offset" : (parseInt(page)-1)*parseInt(limit)
 		})
         if (properties) {
             sendSuccessResponse(res, {properties});
@@ -180,6 +191,7 @@ module.exports.getByRangeDate = async (req, res)=>{
 		let fromDate = new Date(from);
 		let toDate = new Date(new Date(to).getTime() + 24*60*60*1000);
 		const properties = await Property.findAll({
+			"include":"Images",
 			where : {
 			    createdAt: {
 			    	[Op.lt]: toDate,
@@ -199,14 +211,23 @@ module.exports.getByRangeDate = async (req, res)=>{
 
 module.exports.getByRangePrice = async (req, res)=>{
 	try{
-		let {minPrice, maxPrice} = req.body;
-		const properties = await Property.findAll({
+		let {minPrice, maxPrice, page, limit} = req.body;
+		if (!(page>0 && limit>0)){
+			throw({"code":400, message:errorMessages.PAGE_AND_LIMIT_VALUE_ERROR});
+		}
+		if(!minPrice && !maxPrice){
+			throw({"code":400, message:"INVALIDE MIN AND MAX PRICE"});
+		}
+		const properties = await Property.findAndCountAll({
+			"include":"Images",
 			where : {
 			    price: {
 			    	[Op.lt]: maxPrice,
         			[Op.gt]: minPrice
 			    }
-			}
+			},
+			"limit" : parseInt(limit),
+			"offset" : (parseInt(page)-1)*parseInt(limit)
 		})
         if (properties) {
             sendSuccessResponse(res, {properties});
@@ -222,6 +243,7 @@ module.exports.recent = async (req, res)=>{
 	try{
 		let {minPrice, maxPrice} = req.body;
 		const properties = await Property.findAll({
+			"include":"Images",
 			limit:4,
 			order: [ [ 'createdAt', 'DESC' ]]
 		})

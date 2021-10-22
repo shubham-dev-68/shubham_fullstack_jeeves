@@ -58,3 +58,8 @@ p.footer {
     height: auto;
     display: block;
 }
+
+.propCarousel {
+    width: 400px;
+    height: 450px;
+}
